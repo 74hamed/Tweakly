@@ -8,9 +8,12 @@ Tweakly is a bilingual English/Persian WPF desktop app for Windows 10 22H2 and W
 
 - 90 individual options across Windows, processor, graphics, power, memory, storage, network, input, debloat, cleanup, extras and recovery.
 - Hardware-aware options, visible technical changes and current-value inspection.
+- Persian/English layouts with embedded Peyda / IBM Plex Sans fonts, aligned option cards, visible keyboard focus and short optional hover, press and page animations. Windows' animation preference is respected.
 - Protected original-value journals, verified results and exact Undo for supported settings.
 - Elevation only when needed, through the same EXE. No server, account, background service, telemetry or updater.
 - Original artwork and power plan; independent implementation rather than a wrapped third-party batch script.
+
+The next-stage scope is recorded in [Guardian and calculator coverage](docs/TWEAKFA-COVERAGE.md). Those additions are planned and are not shipped in 0.1.2.
 
 The [feature coverage table](docs/FEATURE-COVERAGE.md) documents equivalences and intentional corrections. Read [limitations](docs/LIMITATIONS.md) before public distribution.
 
@@ -56,6 +59,8 @@ The GitHub Actions workflow builds and tests on Windows. A `v*` tag produces the
 
 MIT. See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
+Font assets retain their separate licenses. The supplied Peyda files are included with the project owner's confirmed redistribution permission; the MIT license applies to Tweakly code, not to Peyda. UI behavior and visual checks are described in [UI notes](docs/UI.md).
+
 ---
 
 ## فارسی
@@ -63,6 +68,8 @@ MIT. See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)
 **Tweakly ابزار پرتابل و متن‌باز تنظیم ویندوز است؛ گزینه‌ها دانه‌دانه اجرا می‌شوند.**
 
 یک فایل EXE را باز کن، دستهٔ موردنظر را انتخاب کن و فقط گزینهٔ دلخواهت را اجرا کن. بازشدن اپ تنظیمات ویندوز را تغییر نمی‌دهد. رابط فارسی و انگلیسی، ثبت وضعیت قبلی، بررسی نتیجه و بازگردانی تنظیمات پشتیبانی‌شده فراهم شده‌اند.
+
+رابط از فونت داخلی Peyda برای فارسی و IBM Plex Sans برای انگلیسی استفاده می‌کند؛ نصب فونت لازم نیست. چیدمان راست‌به‌چپ، کارت‌های خوانا، وضعیت انتخاب‌شده و انیمیشن‌های کوتاه دکمه‌ها و صفحه‌ها فراهم‌اند. تنظیم کاهش حرکت ویندوز رعایت می‌شود. مجوز فونت‌ها جدا از مجوز MIT سورس است.
 
 برای ساخت، SDK نسخهٔ ۱۰ از .NET را نصب و دستورهای بالا را در ویندوز اجرا کن. امکانات اصلی آفلاین هستند؛ تست‌های اینترنت، نصب مجدد برنامه و بعضی ابزارهای ویندوز نیازمندی‌های خودشان را دارند.
 

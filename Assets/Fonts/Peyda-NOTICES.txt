@@ -1,0 +1,13 @@
+Peyda typeface
+
+Copyright (c) 2019 by www.fontiran.com. All rights reserved.
+Designer: Naser Khadem. Manufacturer: fontiran.com (Naser Khadem).
+
+License notice from the supplied font's metadata:
+"To use this font, it is necessary to obtain the license from www.fontiran.com"
+License information: https://fontiran.com/licenses/
+
+The project owner supplied these files and confirmed permission for public
+GitHub redistribution and embedding in the Tweakly executable on 2026-10-02.
+This notice records that confirmation; it does not replace the font license
+or grant additional rights. Peyda is not relicensed under Tweakly's MIT license.

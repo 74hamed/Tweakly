@@ -13,7 +13,7 @@
     <DisableTransitiveFrameworkReferenceDownloads>true</DisableTransitiveFrameworkReferenceDownloads>
     <DebugType>none</DebugType>
     <PathMap>$(MSBuildProjectDirectory)=/_/Tweakly</PathMap>
-    <Version>0.1.0</Version>
+    <Version>0.1.2</Version>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\Tweakly.ico</ApplicationIcon>
     <Product>Tweakly</Product>
@@ -21,6 +21,9 @@
     <Authors>Tweakly contributors</Authors>
   </PropertyGroup>
   <ItemGroup>
+    <Resource Include="Assets\Fonts\*.ttf" />
+    <EmbeddedResource Include="Assets\Fonts\*-LICENSE.txt" />
+    <EmbeddedResource Include="Assets\Fonts\*-NOTICES.txt" />
     <EmbeddedResource Include="Data\catalog.json" />
     <EmbeddedResource Include="Data\ram.json" />
     <EmbeddedResource Include="Assets\wallpaper.png" />

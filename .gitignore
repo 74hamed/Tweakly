@@ -1,6 +1,7 @@
 bin/
 obj/
 publish/
+outputs/
 qa-images/
 test-report.json
 inspection.json

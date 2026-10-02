@@ -8,13 +8,22 @@ using System.Windows.Threading;
 
 namespace Tweakly;
 
-public sealed record Navigation(string Id, string Title, string Glyph, int Count);
+public sealed record Navigation(string Id, string Title, string Glyph, int Count, bool Selected);
 public partial class MainWindow : Window
 {
     private readonly MainViewModel vm = new();
     private readonly bool preview;
     private bool busy;
     private int revision;
+    private static IEnumerable<T> FindDescendants<T>(DependencyObject root) where T : DependencyObject
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+        {
+            var child = VisualTreeHelper.GetChild(root, i);
+            if (child is T match) yield return match;
+            foreach (var descendant in FindDescendants<T>(child)) yield return descendant;
+        }
+    }
     private readonly List<Button> actionButtons = [];
     private readonly List<string> selectedApps = [], selectedDevices = [];
     private static readonly (string Id, string En, string Fa, string Glyph)[] Categories =
@@ -22,13 +31,14 @@ public partial class MainWindow : Window
     public MainWindow(bool preview = false)
     {
         this.preview = preview; InitializeComponent(); DataContext = vm;
+        UiMotion.SetEnabled(this, !preview && SystemParameters.ClientAreaAnimation);
         Width = Math.Min(1360, SystemParameters.WorkArea.Width - 28); Height = Math.Min(900, SystemParameters.WorkArea.Height - 28);
         MinWidth = Math.Min(820, SystemParameters.WorkArea.Width - 20); MinHeight = Math.Min(620, SystemParameters.WorkArea.Height - 20);
         Closing += (_, e) => { if (busy) { e.Cancel = true; MessageBox.Show(vm.L("An operation is running. Wait for its result before closing.", "یک عملیات در حال اجراست؛ پیش از بستن برنامه منتظر نتیجه بمانید."), "Tweakly"); } };
         Loaded += (_, _) => Render();
     }
     private Brush Brush(string name) => (Brush)FindResource(name);
-    private TextBlock Text(string value, double size = 14, string brush = "TextBrush", bool bold = false) => new() { Text = value, FontSize = size, Foreground = Brush(brush), FontWeight = bold ? FontWeights.SemiBold : FontWeights.Normal, TextWrapping = TextWrapping.Wrap, Margin = new(0, 0, 0, 9) };
+    private TextBlock Text(string value, double size = 14, string brush = "TextBrush", bool bold = false) => new() { Text = value, FontSize = vm.Persian ? size + 1 : size, Foreground = Brush(brush), FontWeight = bold ? FontWeights.Bold : FontWeights.Medium, TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Left, Margin = new(0, 0, 0, 8) };
     private Border Card(UIElement child, bool accent = false) => new() { Style = (Style)FindResource("Card"), Child = child, Margin = new(0, 0, 0, 18), Background = accent ? new LinearGradientBrush(Color.FromRgb(38, 30, 67), Color.FromRgb(23, 23, 39), 20) : Brush("SurfaceBrush") };
     private Button Button(string title, RoutedEventHandler handler, bool primary = false)
     {
@@ -39,19 +49,46 @@ public partial class MainWindow : Window
     private void Render()
     {
         revision++; actionButtons.Clear();
+        FontFamily = (FontFamily)FindResource(vm.Persian ? "PersianFont" : "EnglishFont");
         AppLayout.FlowDirection = vm.Persian ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         BrandSubtitle.Text = vm.L("Portable Windows tuning", "تنظیم ویندوز، بدون نصب");
-        OverviewButton.Content = vm.L("⌂   Overview", "⌂   نمای کلی"); CategoriesCaption.Text = vm.L("YOUR TOOLBOX", "جعبه‌ابزار تو");
-        CategoryNav.ItemsSource = Categories.Select(c => new Navigation(c.Id, vm.L(c.En, c.Fa), c.Glyph, Catalog.All.Count(t => t.Category == c.Id))).ToList();
-        HistoryButton.Content = vm.L("◷   Change history", "◷   تاریخچهٔ تغییرات"); AboutButton.Content = vm.L("ⓘ   About & settings", "ⓘ   درباره و تنظیمات");
-        PortableNote.Text = vm.L("ONE EXE. YOUR CHOICE.", "یک EXE؛ انتخاب با توست.");
-        LanguageButton.Content = vm.Persian ? "English  ↔" : "فارسی  ↔";
-        PageEyebrow.Text = vm.L("TWEAKLY / YOUR SYSTEM, IN YOUR HANDS", "TWEAKLY / کنترل سیستم در دست تو");
+        SetNavigation(OverviewButton, "⌂", vm.L("Overview", "نمای کلی"), vm.Category == "overview"); CategoriesCaption.Text = vm.L("YOUR TOOLBOX", "جعبه‌ابزار تو");
+        CategoryNav.ItemsSource = Categories.Select(c => new Navigation(c.Id, vm.L(c.En, c.Fa), c.Glyph, Catalog.All.Count(t => t.Category == c.Id), vm.Category == c.Id)).ToList();
+        SetNavigation(HistoryButton, "◷", vm.L("Change history", "تاریخچهٔ تغییرات"), vm.Category == "history"); SetNavigation(AboutButton, "ⓘ", vm.L("About & settings", "درباره و تنظیمات"), vm.Category == "about");
+        PortableNote.Text = vm.L("PORTABLE. READY WHEN YOU ARE.", "پرتابل؛ آمادهٔ اجرا");
+        LanguageButton.Content = vm.Persian ? "English" : "فارسی";
+        LanguageButton.FontFamily = (FontFamily)FindResource(vm.Persian ? "EnglishFont" : "PersianFont");
+        LanguageButton.FlowDirection = vm.Persian ? FlowDirection.LeftToRight : FlowDirection.RightToLeft;
+        PageEyebrow.Text = vm.L("YOUR SYSTEM, IN YOUR HANDS", "کنترل سیستم در دست تو");
         FooterNote.Text = vm.L("Open source · Individual actions · No automatic tweaks", "متن‌باز · اجرای جداگانه · بدون تغییر خودکار");
         BusyLabel.Text = vm.L("Working on your selected option. Please keep Tweakly open…", "اجرای گزینهٔ انتخاب‌شده؛ لطفاً Tweakly را باز نگه دارید…");
         PageContent.Children.Clear();
         if (vm.Selected is not null) RenderDetail(vm.Selected);
         else switch (vm.Category) { case "overview": RenderOverview(); break; case "history": RenderHistory(); break; case "about": RenderAbout(); break; default: RenderOptions(); break; }
+    }
+    private void SetNavigation(Button button, string glyph, string title, bool selected)
+    {
+        var row = new Grid(); row.ColumnDefinitions.Add(new() { Width = new(29) }); row.ColumnDefinitions.Add(new());
+        var icon = Text(glyph, 17, "AccentBrush"); icon.FontFamily = (FontFamily)FindResource("IconFont"); icon.Margin = new(0); row.Children.Add(icon);
+        var label = Text(title, 14); label.Margin = new(0); Grid.SetColumn(label, 1); row.Children.Add(label);
+        button.Content = row; button.Background = selected ? new SolidColorBrush(Color.FromRgb(42, 34, 63)) : Brushes.Transparent;
+        button.BorderBrush = selected ? new SolidColorBrush(Color.FromRgb(75, 59, 111)) : Brushes.Transparent;
+    }
+    private TextBlock TechnicalText(string value, double size = 13)
+    {
+        var text = Text(value, size, "MutedBrush"); text.FlowDirection = FlowDirection.LeftToRight;
+        text.TextAlignment = vm.Persian ? TextAlignment.Right : TextAlignment.Left;
+        text.FontFamily = (FontFamily)FindResource("EnglishFont"); return text;
+    }
+    private string? Incompatibility(Tweak tweak)
+    {
+        var reason = vm.System.Incompatible(tweak);
+        if (!vm.Persian || reason is null) return reason;
+        if (reason.Contains("x64 is required")) return "به ویندوز ۱۰ نسخهٔ 22H2 یا ویندوز ۱۱ با معماری x64 نیاز دارد.";
+        if (reason.StartsWith("This option targets")) return "این گزینه برای ویندوز " + tweak.Os + " است.";
+        if (reason.Contains("hardware was not detected")) return "سخت‌افزار " + tweak.Vendor + " در سیستم شناسایی نشد.";
+        if (reason.Contains("Ethernet")) return "کارت شبکهٔ اترنت در سیستم شناسایی نشد.";
+        return reason;
     }
     private void RenderOverview()
     {
@@ -65,17 +102,18 @@ public partial class MainWindow : Window
         var stats = new System.Windows.Controls.Primitives.UniformGrid { Columns = 3, Margin = new(0, 0, 0, 9) };
         foreach (var (label, value) in new[] { (vm.L("OPERATING SYSTEM", "سیستم‌عامل"), vm.System.Os + " · " + vm.System.Build), (vm.L("MEMORY", "حافظه"), $"{vm.System.RamGb:0} GB"), (vm.L("GRAPHICS", "گرافیک"), string.Join(" + ", vm.System.Gpus.Select(g => g.Vendor).Distinct())) })
         {
-            var content = new StackPanel(); content.Children.Add(Text(label, 11, "MutedBrush")); var metric = Text(value.Length > 0 ? value : "—", 19, bold: true); metric.FlowDirection = FlowDirection.LeftToRight; metric.TextAlignment = vm.Persian ? TextAlignment.Right : TextAlignment.Left; content.Children.Add(metric);
+            var content = new StackPanel(); content.Children.Add(Text(label, 11, "MutedBrush")); var metric = Text(value.Length > 0 ? value : "—", 19, bold: true); metric.FontFamily = (FontFamily)FindResource("EnglishFont"); metric.FlowDirection = FlowDirection.LeftToRight; metric.TextAlignment = vm.Persian ? TextAlignment.Right : TextAlignment.Left; content.Children.Add(metric);
             var card = Card(content); card.Margin = new(0, 0, 12, 10); stats.Children.Add(card);
         }
         PageContent.Children.Add(stats);
-        PageContent.Children.Add(Text(vm.System.Cpu, 13, "MutedBrush"));
+        PageContent.Children.Add(TechnicalText(vm.System.Cpu));
         PageContent.Children.Add(Text(vm.L("Choose your workspace", "بخش موردنظرت را انتخاب کن"), 21, bold: true));
-        var tiles = new WrapPanel();
+        var tiles = new System.Windows.Controls.Primitives.UniformGrid { Columns = 3 };
+        tiles.SizeChanged += (_, _) => { var columns = Math.Max(1, (int)(tiles.ActualWidth / 235)); if (tiles.Columns != columns) tiles.Columns = columns; };
         foreach (var category in Categories)
         {
-            var item = new StackPanel(); item.Children.Add(Text(category.Glyph, 25, "AccentBrush")); item.Children.Add(Text(vm.L(category.En, category.Fa), 17, bold: true)); item.Children.Add(Text(Catalog.All.Count(t => t.Category == category.Id) + vm.L(" individual options", " گزینهٔ مستقل"), 12, "MutedBrush"));
-            var tile = new Button { Content = item, Width = 257, MinHeight = 130, Margin = new(0, 0, 14, 14), Padding = new(20), HorizontalContentAlignment = HorizontalAlignment.Stretch, Background = Brush("SurfaceBrush"), IsEnabled = !busy };
+            var item = new StackPanel(); var icon = Text(category.Glyph, 23, "AccentBrush"); icon.FontFamily = (FontFamily)FindResource("IconFont"); item.Children.Add(icon); item.Children.Add(Text(vm.L(category.En, category.Fa), 17, bold: true)); item.Children.Add(Text(Catalog.All.Count(t => t.Category == category.Id) + vm.L(" individual options", " گزینهٔ مستقل"), 12, "MutedBrush"));
+            var tile = new Button { Content = item, MinHeight = 122, Margin = new(0, 0, 12, 12), Padding = new(20), HorizontalContentAlignment = HorizontalAlignment.Stretch, Background = Brush("SurfaceBrush"), IsEnabled = !busy };
             tile.Click += (_, _) => Navigate(category.Id); tiles.Children.Add(tile);
         }
         PageContent.Children.Add(tiles);
@@ -85,34 +123,59 @@ public partial class MainWindow : Window
     private void RenderOptions()
     {
         PageTitle.Text = CategoryTitle(vm.Category);
-        var search = new TextBox { Text = vm.Query, Margin = new(0, 0, 0, 18), ToolTip = vm.L("Search option names in Persian or English", "جست‌وجوی نام گزینه به فارسی یا انگلیسی") };
-        PageContent.Children.Add(Text(vm.L("Find an option", "جست‌وجوی گزینه"), 12, "MutedBrush")); PageContent.Children.Add(search);
+        var search = new TextBox { Text = vm.Query, Height = 48, Margin = new(0, 0, 0, 16),
+            ToolTip = vm.L("Search in Persian or English", "جست‌وجو به فارسی یا انگلیسی") };
+        System.Windows.Automation.AutomationProperties.SetName(search, vm.L("Find an option", "جست‌وجوی گزینه"));
+        PageContent.Children.Add(Text(vm.L("Find an option", "جست‌وجوی گزینه"), 13, "MutedBrush")); PageContent.Children.Add(search);
+        var summary = Text("", 12, "MutedBrush"); PageContent.Children.Add(summary);
         var list = new StackPanel(); PageContent.Children.Add(list);
         void Populate()
         {
-            list.Children.Clear();
-            foreach (var tweak in vm.Visible)
+            list.Children.Clear(); var options = vm.Visible.ToList();
+            summary.Text = vm.L($"{options.Count} options · Choose one to view its controls", $"{options.Count} گزینه · برای دیدن تنظیمات، یک گزینه را انتخاب کن");
+            foreach (var tweak in options)
             {
-                var grid = new Grid(); grid.ColumnDefinitions.Add(new() { Width = new(1, GridUnitType.Star) }); grid.ColumnDefinitions.Add(new() { Width = new(105) });
-                var text = new StackPanel(); text.Children.Add(Text(tweak.Title(vm.Persian), 17, bold: true));
-                var incompatible = vm.System.Incompatible(tweak);
-                text.Children.Add(Text(incompatible is null ? vm.L("View details, current state and controls", "مشاهدهٔ توضیحات، وضعیت فعلی و کنترل‌ها") : vm.L("Unavailable: ", "در دسترس نیست: ") + incompatible, 12, "MutedBrush"));
-                grid.Children.Add(text);
-                var tag = Text(RiskLabel(tweak.Risk) + "  ›", 12, tweak.Risk is "High" or "Destructive" ? "AccentBrush" : "MutedBrush"); Grid.SetColumn(tag, 1); tag.VerticalAlignment = VerticalAlignment.Center; grid.Children.Add(tag);
-                var button = new Button { Content = grid, Padding = new(20, 18, 20, 13), Margin = new(0, 0, 0, 10), HorizontalContentAlignment = HorizontalAlignment.Stretch, Background = Brush("SurfaceBrush"), IsEnabled = !busy };
+                var incompatible = Incompatibility(tweak);
+                var row = new Grid(); row.ColumnDefinitions.Add(new() { Width = new(1, GridUnitType.Star) });
+                row.ColumnDefinitions.Add(new() { Width = GridLength.Auto }); row.ColumnDefinitions.Add(new() { Width = new(28) });
+                var copy = new StackPanel { Margin = new(0, 0, 18, 0) };
+                var title = Text(tweak.Title(vm.Persian), 17, bold: true); title.Margin = new(0, 0, 0, 6); copy.Children.Add(title);
+                var description = Text(incompatible is null ? tweak.Description(vm.Persian) : vm.L("Unavailable: ", "در دسترس نیست: ") + incompatible, 13, "MutedBrush");
+                description.LineHeight = 20; description.MaxHeight = 40; description.TextTrimming = TextTrimming.CharacterEllipsis;
+                description.Margin = new(0); copy.Children.Add(description); row.Children.Add(copy);
+                var badgeText = Text(incompatible is null ? RiskLabel(tweak.Risk) : vm.L("Unavailable", "ناسازگار"), 12,
+                    incompatible is not null ? "MutedBrush" : tweak.Risk is "High" or "Destructive" ? "WarningBrush" : "AccentBrush");
+                badgeText.Margin = new(0); badgeText.TextWrapping = TextWrapping.NoWrap;
+                var badge = new Border { Child = badgeText, Background = new SolidColorBrush(Color.FromRgb(32, 29, 45)),
+                    CornerRadius = new(6), Padding = new(10, 5, 10, 5), VerticalAlignment = VerticalAlignment.Center };
+                Grid.SetColumn(badge, 1); row.Children.Add(badge);
+                var arrow = Text(vm.Persian ? "‹" : "›", 23, "MutedBrush"); arrow.FontFamily = (FontFamily)FindResource("EnglishFont"); arrow.FlowDirection = FlowDirection.LeftToRight;
+                arrow.TextAlignment = TextAlignment.Center; arrow.Margin = new(8, 0, 0, 0); arrow.VerticalAlignment = VerticalAlignment.Center;
+                Grid.SetColumn(arrow, 2); row.Children.Add(arrow);
+                var button = new Button { Content = row, Padding = new(20, 18, 20, 18), MinHeight = 96, Margin = new(0, 0, 0, 12),
+                    HorizontalContentAlignment = HorizontalAlignment.Stretch, Background = Brush("SurfaceBrush"), IsEnabled = !busy };
                 button.Click += (_, _) => Select(tweak); list.Children.Add(button);
             }
-            if (list.Children.Count == 0) list.Children.Add(Text(vm.L("No matching options.", "گزینه‌ای پیدا نشد."), 15, "MutedBrush"));
+            if (options.Count == 0) list.Children.Add(Card(Text(vm.L("No matches. Try another name or clear the search.", "گزینه‌ای پیدا نشد؛ نام دیگری بنویس یا جست‌وجو را پاک کن."), 15, "MutedBrush")));
         }
         search.TextChanged += (_, _) => { vm.Query = search.Text.Trim(); Populate(); }; Populate();
-        if (vm.Category != "all") PageContent.Children.Add(Button(vm.L("Undo recorded changes in this category", "بازگردانی تغییرات ثبت‌شدهٔ این دسته"), async (_, _) => await Execute(Catalog.All.First(t => t.Category == vm.Category), "undo-category")));
+        if (vm.Category != "all")
+        {
+            var undo = Button(vm.L("Undo recorded changes in this category", "بازگردانی تغییرات ثبت‌شدهٔ این دسته"), async (_, _) => await Execute(Catalog.All.First(t => t.Category == vm.Category), "undo-category"));
+            undo.HorizontalAlignment = HorizontalAlignment.Left;
+            undo.IsEnabled = !preview && !busy && vm.History.Any(session => session.Category == vm.Category && session.Undoable && session.Status != "Restored" && session.Changes.Any(change => change.State is "Applied" or "Writing"));
+            if (!undo.IsEnabled) undo.ToolTip = vm.L("No recorded changes to restore in this category", "تغییر ثبت‌شده‌ای برای بازگردانی این دسته وجود ندارد");
+            ToolTipService.SetShowOnDisabled(undo, true);
+            PageContent.Children.Add(undo);
+        }
     }
     private string RiskLabel(string risk) => risk switch { "Standard" => vm.L("Standard", "عادی"), "Advanced" => vm.L("Advanced", "پیشرفته"), "High" => vm.L("Sensitive", "حساس"), "Destructive" => vm.L("Removal / reset", "حذف / بازسازی"), _ => risk };
     private string StatusLabel(string status) => vm.Persian ? status switch { "Preparing" => "آماده‌سازی", "Running" => "در حال اجرا", "Completed" => "انجام شد", "CompletedWithSkips" => "انجام شد؛ بعضی موارد ناسازگار بودند", "Failed" => "ناموفق", "Undoing" => "در حال بازگردانی", "Restored" => "بازگردانی شد", "UndoFailed" => "بازگردانی متوقف شد", "Cancelled" => "لغو شد", "Unavailable" => "در دسترس نیست", "Busy" => "عملیات دیگری در حال اجراست", "Opened" => "باز شد", _ => status } : status;
     private void RenderDetail(Tweak tweak)
     {
         PageTitle.Text = CategoryTitle(tweak.Category);
-        PageContent.Children.Add(Button(vm.L("← Back to options", "→ بازگشت به گزینه‌ها"), (_, _) => { if (busy) return; vm.Selected = null; Render(); }));
+        var back = Button(vm.L("← Back to options", "→ بازگشت به گزینه‌ها"), (_, _) => { if (busy) return; vm.Selected = null; Render(); ContentScroll.ScrollToTop(); UiMotion.Reveal(PageContent); });
+        back.HorizontalAlignment = HorizontalAlignment.Left; PageContent.Children.Add(back);
         var detail = new StackPanel(); detail.Children.Add(Text(tweak.Title(vm.Persian), 25, bold: true));
         detail.Children.Add(Text(RiskLabel(tweak.Risk) + (tweak.Reboot ? vm.L("  ·  Restart may be needed", "  ·  ممکن است ری‌استارت لازم باشد") : vm.L("  ·  No automatic restart", "  ·  بدون ری‌استارت خودکار")), 12, "AccentBrush"));
         detail.Children.Add(Text(tweak.Description(vm.Persian), 15, "MutedBrush"));
@@ -121,7 +184,7 @@ public partial class MainWindow : Window
         var state = Text(vm.L("Reading current state…", "در حال خواندن وضعیت فعلی…"), 13, "MutedBrush"); detail.Children.Add(state);
         var controls = new WrapPanel { Margin = new(0, 14, 0, 0) };
         var apply = Button(FeatureBuilder.ReadOnly(tweak) ? vm.L("Open / run", "بازکردن / اجرا") : vm.L("Apply this option", "اجرای همین گزینه"), async (_, _) => await Execute(tweak, "apply"), true);
-        apply.IsEnabled = !preview && !busy && vm.System.Incompatible(tweak) is null; actionButtons.Add(apply); controls.Children.Add(apply);
+        apply.IsEnabled = !preview && !busy && Incompatibility(tweak) is null; actionButtons.Add(apply); controls.Children.Add(apply);
         if (!FeatureBuilder.Maintenance(tweak) && !FeatureBuilder.ReadOnly(tweak))
         {
             var undo = Button(vm.L("Undo my changes", "بازگردانی تغییرات من"), async (_, _) => await Execute(tweak, "undo")); undo.IsEnabled = !busy && new Journal(vm.System.Sid).Latest(tweak.Id) is not null; actionButtons.Add(undo); controls.Children.Add(undo);
@@ -146,7 +209,7 @@ public partial class MainWindow : Window
     }
     private void AddField(StackPanel container, string key, string label, string defaultValue)
     {
-        container.Children.Add(Text(label, 13, "MutedBrush")); var input = new TextBox { Text = vm.Inputs.GetValueOrDefault(key, defaultValue), Margin = new(0, 0, 0, 16), FlowDirection = FlowDirection.LeftToRight };
+        container.Children.Add(Text(label, 13, "MutedBrush")); var input = new TextBox { Text = vm.Inputs.GetValueOrDefault(key, defaultValue), Height = 48, Margin = new(0, 0, 0, 16), FlowDirection = key == "policy" && vm.Persian ? FlowDirection.RightToLeft : FlowDirection.LeftToRight, FontFamily = (FontFamily)FindResource(key == "policy" && vm.Persian ? "PersianFont" : "EnglishFont") };
         vm.Inputs[key] = input.Text; input.TextChanged += (_, _) => vm.Inputs[key] = input.Text.Trim(); container.Children.Add(input);
     }
     private async Task FillInputsAndProbe(Tweak tweak, StackPanel inputs, TextBlock state, StackPanel technical, Button apply, int version)
@@ -161,7 +224,7 @@ public partial class MainWindow : Window
                 case "adapter": case "mtu":
                     AddCombo(inputs, "adapter", vm.L("Target network adapter", "کارت شبکهٔ هدف"), vm.System.Adapters.Where(a => !tweak.EthernetOnly || a.Ethernet).Select(a => new Choice(a.Id, a.ToString())));
                     if (tweak.Input == "mtu") AddField(inputs, "mtu", vm.L("MTU · 1280–1500", "MTU · از ۱۲۸۰ تا ۱۵۰۰"), "1500"); break;
-                case "region": AddCombo(inputs, "region", vm.L("Server region", "منطقهٔ سرور"), new[] { "Europe", "NA East", "NA Central", "NA West", "Brazil", "Asia", "Middle East", "Oceania" }.Select((label, i) => new Choice(FeatureBuilder.Regions[i], label)), "me"); break;
+                case "region": AddCombo(inputs, "region", vm.L("Server region", "منطقهٔ سرور"), new[] { ("Europe", "اروپا"), ("NA East", "شرق آمریکای شمالی"), ("NA Central", "مرکز آمریکای شمالی"), ("NA West", "غرب آمریکای شمالی"), ("Brazil", "برزیل"), ("Asia", "آسیا"), ("Middle East", "خاورمیانه"), ("Oceania", "اقیانوسیه") }.Select((label, i) => new Choice(FeatureBuilder.Regions[i], vm.L(label.Item1, label.Item2))), "me"); break;
                 case "qos":
                     AddField(inputs, "policy", vm.L("Policy name", "نام سیاست"), "Tweakly Game"); AddField(inputs, "application", vm.L("Application EXE name", "نام EXE برنامه"), "");
                     inputs.Children.Add(Button(vm.L("Choose an EXE…", "انتخاب فایل EXE…"), (_, _) => { var picker = new Microsoft.Win32.OpenFileDialog { Filter = "Applications (*.exe)|*.exe", CheckFileExists = true }; if (picker.ShowDialog(this) == true) { vm.Inputs["application"] = Path.GetFileName(picker.FileName); Render(); } })); break;
@@ -169,7 +232,7 @@ public partial class MainWindow : Window
                 case "apps":
                     inputs.Children.Add(Text(vm.L("Select the apps to remove. Nothing is selected by default.", "برنامه‌های موردنظر را انتخاب کن؛ به‌صورت پیش‌فرض هیچ‌کدام انتخاب نشده‌اند."), 13, "MutedBrush"));
                     var appChecks = new StackPanel();
-                    foreach (var (id, label) in FeatureBuilder.InboxApps) { var check = new CheckBox { Content = label, IsChecked = selectedApps.Contains(id) }; check.Checked += (_, _) => { if (!selectedApps.Contains(id)) selectedApps.Add(id); vm.Inputs["apps"] = string.Join(',', selectedApps); }; check.Unchecked += (_, _) => { selectedApps.Remove(id); vm.Inputs["apps"] = string.Join(',', selectedApps); }; appChecks.Children.Add(check); }
+                    foreach (var (id, label) in FeatureBuilder.InboxApps) { var check = new CheckBox { Content = TechnicalText(label, 13), IsChecked = selectedApps.Contains(id) }; check.Checked += (_, _) => { if (!selectedApps.Contains(id)) selectedApps.Add(id); vm.Inputs["apps"] = string.Join(',', selectedApps); }; check.Unchecked += (_, _) => { selectedApps.Remove(id); vm.Inputs["apps"] = string.Join(',', selectedApps); }; appChecks.Children.Add(check); }
                     inputs.Children.Add(new ScrollViewer { Content = appChecks, MaxHeight = 240, VerticalScrollBarVisibility = ScrollBarVisibility.Auto }); break;
                 case "disk": case "devices":
                     inputs.Children.Add(Text(vm.L("Reading detected devices…", "در حال شناسایی دستگاه‌ها…"), 13, "MutedBrush"));
@@ -184,13 +247,13 @@ public partial class MainWindow : Window
                     }
                     break;
             }
-            if (vm.System.Incompatible(tweak) is string unsupported) { state.Text = vm.L("Unavailable: ", "در دسترس نیست: ") + unsupported; apply.IsEnabled = false; return; }
+            if (Incompatibility(tweak) is string unsupported) { state.Text = vm.L("Unavailable: ", "در دسترس نیست: ") + unsupported; apply.IsEnabled = false; return; }
             if (tweak.Handler is "InstallEdge" or "RemoveEdge" && !File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Microsoft\WindowsApps\winget.exe")))
             {
                 state.Text = vm.L("Unavailable: Microsoft App Installer / winget is required for this online action.", "در دسترس نیست: این عملیات آنلاین به Microsoft App Installer یا winget نیاز دارد."); apply.IsEnabled = false; return;
             }
             if (FeatureBuilder.Maintenance(tweak)) { state.Text = vm.L("Ready for the selected action. Result is verified where Windows exposes it.", "آمادهٔ عملیات انتخاب‌شده؛ نتیجه بر اساس اطلاعات قابل بررسی ویندوز گزارش می‌شود."); return; }
-            if (preview) { state.Text = vm.L("Preview · actions disabled", "پیش‌نمایش · اجرای عملیات غیرفعال است"); apply.IsEnabled = false; foreach (var op in tweak.Operations.Take(12)) technical.Children.Add(Text(op.ToString(), 11, "MutedBrush")); return; }
+            if (preview) { state.Text = vm.L("Preview · actions disabled", "پیش‌نمایش · اجرای عملیات غیرفعال است"); apply.IsEnabled = false; foreach (var op in tweak.Operations.Take(12)) technical.Children.Add(TechnicalText(op.ToString(), 11)); return; }
             // Parameterized operations are probed once the user asks to inspect them; no setters run here.
             var valuesPanel = new StackPanel();
             technical.Children.Add(Button(vm.L("Read current values and planned changes", "خواندن مقادیر فعلی و تغییرات این گزینه"), async (_, _) =>
@@ -205,7 +268,7 @@ public partial class MainWindow : Window
                         var reading = await Task.Run(() => backend.Read(op)); if (version != revision) return;
                         readingsNeedAdmin |= reading.RequiresElevation;
                         if (reading.Supported) { supported++; if (WindowsBackend.Desired(op, reading)) matching++; }
-                        valuesPanel.Children.Add(Text(op + "\n" + (reading.Supported ? vm.L("Current: ", "فعلی: ") + Readable(op, reading) : vm.L("Unavailable: ", "ناموجود: ") + reading.Reason), 11, "MutedBrush"));
+                        valuesPanel.Children.Add(TechnicalText(op + "\n" + (reading.Supported ? "Current: " + Readable(op, reading) : "Unavailable: " + reading.Reason), 11));
                     }
                     state.Text = vm.L($"{supported} readable settings · {matching} already match · {operations.Count - supported} unavailable", $"{supported} تنظیم قابل خواندن · {matching} مطابق هدف · {operations.Count - supported} ناموجود");
                     apply.IsEnabled = !preview && !busy && (supported > 0 || readingsNeedAdmin);
@@ -291,7 +354,7 @@ public partial class MainWindow : Window
             if (session.Messages.Count > 0)
             {
                 var details = string.Join('\n', session.Messages.Select(m => m.StartsWith("Power plan backup") ? m[..Math.Min(m.IndexOf(':'), 90)] + " · saved in protected journal" : m));
-                panel.Children.Add(new Expander { Header = vm.L("Details", "جزئیات"), Content = Text(details, 11, "MutedBrush") });
+                panel.Children.Add(new Expander { Header = vm.L("Details", "جزئیات"), Content = TechnicalText(details, 11) });
             }
             PageContent.Children.Add(Card(panel));
         }
@@ -299,9 +362,9 @@ public partial class MainWindow : Window
     private void RenderAbout()
     {
         PageTitle.Text = vm.L("Small app. Clear intentions.", "اپ ساده؛ عملکرد روشن.");
-        var panel = new StackPanel(); panel.Children.Add(Text("Tweakly 0.1.0", 27, bold: true)); panel.Children.Add(Text(vm.L("Open-source Windows tuning, one option at a time. Built with C# / WPF / .NET. MIT license.", "ابزار متن‌باز تنظیم ویندوز با اجرای جداگانهٔ گزینه‌ها. ساخته‌شده با C#، WPF و .NET. مجوز MIT."), 15, "MutedBrush"));
+        var panel = new StackPanel(); var name = Text("Tweakly 0.1.2", 27, bold: true); name.FlowDirection = FlowDirection.LeftToRight; name.FontFamily = (FontFamily)FindResource("EnglishFont"); name.TextAlignment = vm.Persian ? TextAlignment.Right : TextAlignment.Left; panel.Children.Add(name); panel.Children.Add(Text(vm.L("Open-source Windows tuning, one option at a time. Built with C# / WPF / .NET. MIT license.", "ابزار متن‌باز تنظیم ویندوز با اجرای جداگانهٔ گزینه‌ها. ساخته‌شده با C#، WPF و .NET. مجوز MIT."), 15, "MutedBrush"));
         panel.Children.Add(Text(vm.L("No account, telemetry or background service. The core toolbox works offline. Windows prompts for Administrator only when an operation needs it.", "بدون حساب کاربری، تله‌متری یا سرویس پس‌زمینه. امکانات اصلی آفلاین کار می‌کنند؛ ویندوز فقط هنگام عملیات نیازمند دسترسی، Administrator درخواست می‌کند."), 14, "MutedBrush"));
-        panel.Children.Add(Text(vm.L("Backups and history", "بکاپ و تاریخچه"), 18, bold: true)); panel.Children.Add(Text(Journal.Root, 12, "MutedBrush"));
+        panel.Children.Add(Text(vm.L("Backups and history", "بکاپ و تاریخچه"), 18, bold: true)); panel.Children.Add(TechnicalText(Journal.Root, 12));
         panel.Children.Add(Button(vm.L("Open history folder", "بازکردن پوشهٔ تاریخچه"), (_, _) => { if (Directory.Exists(Journal.Root)) Process.Start(new ProcessStartInfo(Journal.Root) { UseShellExecute = true }); }));
         panel.Children.Add(Text(vm.L("Compatibility: Windows 10 22H2 / Windows 11 x64. A setting's availability depends on your edition, installed components and driver. Experimental driver / registry switches do not guarantee improved performance.", "سازگاری: ویندوز ۱۰ نسخهٔ 22H2 و ویندوز ۱۱، x64. موجودبودن هر تنظیم به نسخه، اجزای نصب‌شده و درایور بستگی دارد؛ تنظیمات آزمایشی تضمین افزایش کارایی ندارند."), 13, "MutedBrush"));
         panel.Children.Add(Text(vm.L("Microsoft Windows and NVIDIA drivers are system prerequisites; they are not redistributed. Artwork and power plan are original Tweakly resources.", "ویندوز Microsoft و درایور NVIDIA پیش‌نیاز سیستم‌اند و در اپ بازتوزیع نشده‌اند. طرح برق و گرافیک متعلق به Tweakly هستند."), 12, "MutedBrush"));
@@ -309,19 +372,19 @@ public partial class MainWindow : Window
         {
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             var text = string.Join("\n\n────────────────────\n\n", assembly.GetManifestResourceNames().Where(n => n.Contains("LICENSE") || n.Contains("NOTICES")).Select(n => { using var stream = assembly.GetManifestResourceStream(n)!; using var reader = new StreamReader(stream); return n + "\n\n" + reader.ReadToEnd(); }));
-            var dialog = new Window { Owner = this, Title = "Tweakly · Licenses", Width = Math.Min(850, SystemParameters.WorkArea.Width - 30), Height = Math.Min(650, SystemParameters.WorkArea.Height - 30), WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Brush("BackgroundBrush"), Content = new TextBox { Text = text, IsReadOnly = true, TextWrapping = TextWrapping.Wrap, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Margin = new(16), FlowDirection = FlowDirection.LeftToRight } };
+            var dialog = new Window { Owner = this, Title = "Tweakly · Licenses", FontFamily = (FontFamily)FindResource("EnglishFont"), Width = Math.Min(850, SystemParameters.WorkArea.Width - 30), Height = Math.Min(650, SystemParameters.WorkArea.Height - 30), WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Brush("BackgroundBrush"), Content = new TextBox { Text = text, IsReadOnly = true, TextWrapping = TextWrapping.Wrap, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Margin = new(16), FlowDirection = FlowDirection.LeftToRight } };
             dialog.ShowDialog();
         }));
         PageContent.Children.Add(Card(panel));
         PageContent.Children.Add(Button(vm.L("Switch to Persian", "تغییر زبان به انگلیسی"), (_, _) => Language_Click(this, new())));
     }
-    private void Navigate(string category) { if (busy) return; vm.Category = category; vm.Selected = null; vm.Query = ""; Render(); ContentScroll.ScrollToTop(); }
-    private void Select(Tweak tweak) { if (busy) return; vm.Category = tweak.Category; vm.Selected = tweak; vm.Inputs.Clear(); selectedApps.Clear(); selectedDevices.Clear(); Render(); ContentScroll.ScrollToTop(); }
+    private void Navigate(string category) { if (busy) return; vm.Category = category; vm.Selected = null; vm.Query = ""; Render(); ContentScroll.ScrollToTop(); UiMotion.Reveal(PageContent); }
+    private void Select(Tweak tweak) { if (busy) return; vm.Category = tweak.Category; vm.Selected = tweak; vm.Inputs.Clear(); selectedApps.Clear(); selectedDevices.Clear(); Render(); ContentScroll.ScrollToTop(); UiMotion.Reveal(PageContent); }
     private void Overview_Click(object sender, RoutedEventArgs e) => Navigate("overview");
     private void Category_Click(object sender, RoutedEventArgs e) { if (sender is Button { Tag: string id }) Navigate(id); }
     private void History_Click(object sender, RoutedEventArgs e) => Navigate("history");
     private void About_Click(object sender, RoutedEventArgs e) => Navigate("about");
-    private void Language_Click(object sender, RoutedEventArgs e) { if (busy) return; vm.Persian = !vm.Persian; if (!preview) vm.SavePreferences(); Render(); }
+    private void Language_Click(object sender, RoutedEventArgs e) { if (busy) return; vm.Persian = !vm.Persian; if (!preview) vm.SavePreferences(); Render(); UiMotion.Reveal(PageContent); }
     private void Minimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
     private void Maximize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
@@ -335,14 +398,40 @@ public partial class MainWindow : Window
             var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(image)); using var file = File.Create(Path.Combine(directory, name + ".png")); encoder.Save(file);
         }
         vm.Persian = false; Navigate("overview"); await Capture("overview-en");
+        Navigate("cpu"); await Capture("cpu-en");
         Navigate("network"); await Capture("network-en");
         Select(Catalog.Get("qos")); await Capture("qos-en");
         vm.Persian = true; vm.Selected = null; vm.Category = "overview"; Render(); await Capture("overview-fa");
+        Navigate("cpu"); await Capture("cpu-fa");
+        Select(Catalog.Get("qos")); await Capture("qos-fa");
+        var field = FindDescendants<TextBox>(PageContent).First(); field.Focus(); await Capture("focus-fa");
+        Navigate("cpu"); var search = FindDescendants<TextBox>(PageContent).First(); search.Text = "Intel"; await Capture("search-fa"); search.Text = "missing-option"; await Capture("empty-search-fa");
+        Select(Catalog.All.First(t => t.Category == "cpu" && t.Vendor == "Intel"));
+        FindDescendants<Expander>(PageContent).First().IsExpanded = true; ContentScroll.ScrollToBottom(); await Capture("technical-fa");
         Select(Catalog.Get("remove-apps")); await Capture("apps-fa");
         Width = 850; Height = 680; Navigate("overview"); await Capture("small-fa");
         Navigate("history"); await Capture("history-fa");
         MinHeight = 450; Height = 510; Width = 920; Select(Catalog.Get("mtu")); await Capture("compact-form-fa", 192);
+        // Read-only checks exercise page animation and the inherited reduced-motion switch.
+        var fonts = new[] { "EnglishFont", "PersianFont" }.ToDictionary(key => key, key =>
+            ((FontFamily)FindResource(key)).GetTypefaces().Select(face => face.TryGetGlyphTypeface(out var glyph) ? glyph.FontUri.ToString() : "unresolved").ToArray());
+        UiMotion.SetEnabled(this, true); Navigate("cpu");
+        await Dispatcher.InvokeAsync(UpdateLayout, DispatcherPriority.Render);
+        await Task.Delay(80); var duringAnimation = PageContent.Opacity;
+        await Task.Delay(220); var afterAnimation = PageContent.Opacity;
+        var motionButton = FindDescendants<Button>(PageContent).First(); motionButton.ApplyTemplate();
+        var motionTriggers = motionButton.Template.Triggers.OfType<MultiTrigger>().ToArray();
+        var hoverStory = ((System.Windows.Media.Animation.BeginStoryboard)motionTriggers[0].EnterActions[0]).Storyboard.Clone();
+        var pressStory = ((System.Windows.Media.Animation.BeginStoryboard)motionTriggers[1].EnterActions[0]).Storyboard.Clone();
+        hoverStory.Begin(motionButton, motionButton.Template, true); pressStory.Begin(motionButton, motionButton.Template, true);
+        await Task.Delay(220);
+        var hoverOpacity = ((Border)motionButton.Template.FindName("Hover", motionButton)).Opacity;
+        var pressedScale = ((ScaleTransform)((Grid)motionButton.Template.FindName("Root", motionButton)).RenderTransform).ScaleX;
+        hoverStory.Remove(motionButton); pressStory.Remove(motionButton);
+        UiMotion.SetEnabled(this, false); Navigate("overview");
+        var disabledMotion = PageContent.Opacity;
         var process = Process.GetCurrentProcess();
+        File.WriteAllText(Path.Combine(directory, "ui-checks.json"), JsonSerializer.Serialize(new { Fonts = fonts, DuringPageAnimation = duringAnimation, AfterPageAnimation = afterAnimation, ReducedMotionOpacity = disabledMotion, HoverOpacity = hoverOpacity, PressedScale = pressedScale }, Catalog.Json));
         File.WriteAllText(Path.Combine(directory, "runtime.json"), JsonSerializer.Serialize(new { WorkingSetMiB = process.WorkingSet64 / 1048576d, PrivateMiB = process.PrivateMemorySize64 / 1048576d, OptionCount = Catalog.All.Count, Architecture = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString(), ReadOnlyQa = true }, Catalog.Json));
     }
 }
