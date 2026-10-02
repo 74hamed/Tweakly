@@ -1,0 +1,16 @@
+bin/
+obj/
+publish/
+qa-images/
+test-report.json
+inspection.json
+benchmark*.json
+Activity/
+.vs/
+*.user
+*.suo
+*.tmp
+*.pow
+History/
+preferences.json
+sdk/

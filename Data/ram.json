@@ -1,0 +1,677 @@
+{
+  "4": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "true"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "4194304",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ],
+  "8": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "true"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "8388608",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ],
+  "12": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "true"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "12582912",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ],
+  "16": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "16777216",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ],
+  "24": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "25165824",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ],
+  "32": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "33554432",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ],
+  "48": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "50331648",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ],
+  "64": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "67108864",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ],
+  "128": [
+    {
+      "Kind": "Memory",
+      "Target": "MemoryCompression",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control",
+      "Name": "SvcHostSplitThresholdInKB",
+      "Value": "134217728",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "LargeSystemCache",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Memory",
+      "Target": "PageCombining",
+      "Value": "false"
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
+      "Name": "DisablePagingExecutive",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+      "Name": "DpiMapIommuContiguous",
+      "Value": "1",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnablePrefetcher",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    },
+    {
+      "Kind": "Registry",
+      "Target": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters",
+      "Name": "EnableSuperfetch",
+      "Value": "0",
+      "Type": "REG_DWORD",
+      "Delete": false,
+      "Tree": false
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PublishTrimmed>false</PublishTrimmed>
+    <DisableTransitiveFrameworkReferenceDownloads>true</DisableTransitiveFrameworkReferenceDownloads>
+    <DebugType>none</DebugType>
+    <PathMap>$(MSBuildProjectDirectory)=/_/Tweakly</PathMap>
+    <Version>0.1.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\Tweakly.ico</ApplicationIcon>
+    <Product>Tweakly</Product>
+    <Description>Portable, open-source Windows tuning. One option at a time.</Description>
+    <Authors>Tweakly contributors</Authors>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Data\catalog.json" />
+    <EmbeddedResource Include="Data\ram.json" />
+    <EmbeddedResource Include="Assets\wallpaper.png" />
+    <EmbeddedResource Include="Assets\Runtime-*.TXT" />
+    <EmbeddedResource Include="LICENSE" />
+    <EmbeddedResource Include="THIRD-PARTY-NOTICES.md" />
+  </ItemGroup>
+</Project>
