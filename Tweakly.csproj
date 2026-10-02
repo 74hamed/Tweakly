@@ -10,7 +10,6 @@
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <PublishTrimmed>false</PublishTrimmed>
-    <DisableTransitiveFrameworkReferenceDownloads>true</DisableTransitiveFrameworkReferenceDownloads>
     <DebugType>none</DebugType>
     <PathMap>$(MSBuildProjectDirectory)=/_/Tweakly</PathMap>
     <Version>0.1.2</Version>

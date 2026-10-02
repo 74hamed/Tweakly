@@ -1,76 +1,166 @@
+<div align="center">
+
 # Tweakly
 
-**Portable, open-source Windows tuning. One option at a time.**
+**Your Windows settings. Your choice. One option at a time.**
 
-Tweakly is a bilingual English/Persian WPF desktop app for Windows 10 22H2 and Windows 11 x64. Open one EXE, explore a category, and explicitly apply a selected option. Starting the app does not change system settings. There is no optimize-all button.
+A portable, open-source Windows tuning app with a bilingual English / Persian interface.
 
-## Features
+[![CI](https://img.shields.io/github/actions/workflow/status/74hamed/Tweakly/build.yml?branch=main&label=CI&style=flat-square)](https://github.com/74hamed/Tweakly/actions/workflows/build.yml)
+[![.NET](https://img.shields.io/badge/.NET-10-8864e8?style=flat-square)](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011%20x64-0078d4?style=flat-square)](#requirements)
+[![Self-tests](https://img.shields.io/badge/self--tests-19%20checks-8864e8?style=flat-square)](#verification)
+[![License](https://img.shields.io/badge/license-MIT-e0b422?style=flat-square)](LICENSE)
 
-- 90 individual options across Windows, processor, graphics, power, memory, storage, network, input, debloat, cleanup, extras and recovery.
-- Hardware-aware options, visible technical changes and current-value inspection.
-- Persian/English layouts with embedded Peyda / IBM Plex Sans fonts, aligned option cards, visible keyboard focus and short optional hover, press and page animations. Windows' animation preference is respected.
-- Protected original-value journals, verified results and exact Undo for supported settings.
-- Elevation only when needed, through the same EXE. No server, account, background service, telemetry or updater.
-- Original artwork and power plan; independent implementation rather than a wrapped third-party batch script.
+**[Download EXE](https://github.com/74hamed/Tweakly/releases/latest) · [Screenshots](#screenshots) · [Build from source](#build-from-source) · [فارسی](#فارسی)**
 
-The next-stage scope is recorded in [Guardian and calculator coverage](docs/TWEAKFA-COVERAGE.md). Those additions are planned and are not shipped in 0.1.2.
+</div>
 
-The [feature coverage table](docs/FEATURE-COVERAGE.md) documents equivalences and intentional corrections. Read [limitations](docs/LIMITATIONS.md) before public distribution.
+![Tweakly English dashboard with system information and individual tuning categories](.github/screenshots/overview-en.png)
 
-## Build
+> [!WARNING]
+> **Early stage software.** Tweakly has had limited practical testing. Its automated checks cover execution and restoration logic; they do not prove that every option works on every Windows or driver configuration. Use a disposable test machine for advanced changes and keep an independent backup of important data.
 
-Install the .NET 10 SDK on Windows. No third-party NuGet libraries are required.
+## What is Tweakly?
+
+Tweakly puts individual Windows settings in a clean desktop interface. Open one EXE, choose a category, read an option's effect, and apply that option when you are ready. Launching the app only reads system information; it does not apply tweaks automatically.
+
+“One click” means launching a portable app. Each setting remains a separate choice.
+
+## Highlights
+
+| Feature | What you get |
+| --- | --- |
+| **Portable EXE** | No installer or separate .NET runtime installation required. |
+| **90 individual options** | Windows, CPU, GPU, power, memory, storage, network, input, debloat, cleanup, extras and recovery. |
+| **English & Persian** | LTR / RTL layouts, embedded IBM Plex Sans / Peyda fonts and readable option cards. |
+| **Informed changes** | Effect descriptions, current-state inspection and explicit reasons for unavailable options. |
+| **Recorded restoration** | Previous values saved before supported changes, result verification and Undo where available. |
+| **Lightweight UI** | Dark theme, purple accents, keyboard focus and short animations that respect Windows' animation preference. |
+| **Local operation** | No account, telemetry, updater or permanent background service. Elevation is requested when an operation needs it. |
+
+Guardian tools and additional calculators are planned for a later stage and are **not included** in the current release.
+
+## Download & use
+
+1. Open the [latest release](https://github.com/74hamed/Tweakly/releases/latest).
+2. Under **Assets**, download **`Tweakly.exe`**. The source archives are for developers.
+3. Open the EXE. No installation is needed.
+4. Choose a category and an option, review its effect and inputs, then select **Apply**.
+5. Use **Undo** for recorded changes that support restoration. Restart only when an option requires it and you choose to do so.
+
+### Requirements
+
+- **Windows 10 22H2 (build 19045) or Windows 11, x64.** These are compatibility targets; full integration testing on both systems is still pending.
+- An administrator token for settings that require elevation. Launching the UI does not require administrator privileges.
+- Core local operations work offline. Online diagnostics, downloads and some package restoration operations require internet access; individual options state their requirements.
+
+The current EXE is unsigned. The runtime and app resources are bundled; native runtime files may be extracted to the account's temporary directory while the app runs.
+
+## Screenshots
+
+These are actual WPF captures of Tweakly v0.1.2 taken in read-only preview mode. No tuning operation was executed to create them. Hardware values reflect the capture machine.
+
+<details>
+<summary><strong>Persian dashboard · RTL interface</strong></summary>
+
+![Tweakly Persian dashboard with right-to-left navigation and system information](.github/screenshots/overview-fa.png)
+
+</details>
+
+<details>
+<summary><strong>Network options · individual controls</strong></summary>
+
+![Tweakly English network category with separate options and risk labels](.github/screenshots/network-en.png)
+
+</details>
+
+## Before changing settings
+
+- **Undo has limits.** Supported settings restore their recorded previous values. App or device removal and some maintenance operations do not have a generic exact Undo.
+- **A restore point is not a personal-file backup.** Creating one depends on Windows System Protection. Destructive operations require a successfully verified restore point.
+- **A verified value is not a performance guarantee.** Hardware, driver and Windows differences affect applicability and results. Missing components are reported explicitly.
+- **Some changes need a restart.** Tweakly does not restart Windows automatically.
+- **Same-account elevation is required.** Switching to another administrator account in a UAC prompt is unsupported.
+
+## Build from source
+
+Install the **.NET 10 SDK** on Windows, then run:
 
 ```powershell
-dotnet build Tweakly.csproj -c Release
+git clone https://github.com/74hamed/Tweakly.git
+cd Tweakly
 dotnet publish Tweakly.csproj -c Release -r win-x64 --self-contained true -o publish
 ```
 
-`publish/Tweakly.exe` is the only distributable file. The .NET desktop runtime and app resources are embedded. Native runtime files may be extracted to the current account's temporary directory while the app runs. Personal journals and preferences are written to Windows data directories, not alongside the EXE.
+The distributable is **`publish/Tweakly.exe`**. No third-party application NuGet libraries are required. The first build needs access to the official .NET runtime packages.
 
-## Tests
+### Verification
 
 ```powershell
+# Test the engine against an in-memory backend; no Windows settings are changed.
 & .\publish\Tweakly.exe --self-test test-report.json
+
+# Capture the real English/Persian WPF interface with actions disabled.
 & .\publish\Tweakly.exe --qa qa-images
-& .\publish\Tweakly.exe --inspect inspection.json
 ```
 
-`--self-test` uses an in-memory backend and never writes live Windows settings. `--qa` renders the actual bilingual WPF UI with all action handlers disabled. These checks do not replace disposable-machine integration tests. Follow [the Windows validation matrix](docs/VALIDATION.md) before calling a release production-tested.
+There are **19 automated checks** covering selected-option isolation, backup failures, repeated Apply, original-value restoration, unavailable components, verification failures, interrupted operations, Undo conflicts and worker IPC permissions. The latest local verification passed all 19 checks. The CI badge above reports the actual GitHub workflow status.
 
-`--inspect` reads representative registry, power, BCD, network, task, memory and driver providers without applying changes. `--benchmark report.json` records process-start-to-first-render time and memory, then closes the read-only window. Diagnostic reports are local data and should be reviewed before sharing.
+Disposable-machine testing on Windows 10 / 11, alternate hardware and drivers, UAC cancellation, offline clean-system launch and physical high-DPI input remains pending. Automated tests and screenshots do not replace these checks.
 
-## Add an option
+The Windows workflow publishes and runs self-tests on pushes and pull requests. A `v*` tag also uploads an EXE build artifact; a public GitHub Release with a downloadable EXE is created separately.
 
-Add a bilingual definition to `Data/catalog.json`. Use existing typed operation providers when possible. Add a small handler only for a genuinely new operation. Record its original state before writes, verify the result, and document whether exact Undo is available. Keep changes local and easy to review; no generic script execution or plugin framework.
+<details>
+<summary><strong>Additional read-only diagnostics</strong></summary>
 
-## Data
+```powershell
+& .\publish\Tweakly.exe --inspect inspection.json
+& .\publish\Tweakly.exe --benchmark benchmark.json
+```
 
-- `%ProgramData%\Tweakly\History`: machine-side, administrator-controlled journals, readable by users. The UI shows only the initiating account's records. Records can include local paths and package inventories; do not share them without review.
-- `%LocalAppData%\Tweakly`: per-account language preference.
-- `%LocalAppData%\Tweakly\Activity`: UI-only results, including UAC cancellation and external-tool launches. These records are never trusted by the administrator worker for restoration.
-- Changing Windows settings requires the initiating account's own administrator token. Switching to another account in UAC is intentionally unsupported.
+`--inspect` reads representative Windows providers without applying changes. `--benchmark` records time to first render and process memory, then closes the read-only window. Reports can contain local system details; review them before sharing.
 
-## Releases
+</details>
 
-The GitHub Actions workflow builds and tests on Windows. A `v*` tag produces the single EXE as an artifact. Uploading/tagging a repository does not silently create a public GitHub Release. Initial builds are unsigned.
+## Local data
+
+| Location | Purpose |
+| --- | --- |
+| `%ProgramData%\Tweakly\History` | Administrator-controlled change journals. The UI displays records for the initiating account. |
+| `%LocalAppData%\Tweakly` | Per-account preferences, including language. |
+| `%LocalAppData%\Tweakly\Activity` | UI results such as UAC cancellation and external-tool launches. These records are not trusted by the worker for restoration. |
+
+Journals may include local paths and package inventories. Keep them out of public issues and source commits. No companion files need to be distributed beside the EXE.
+
+## Contributing
+
+Bug reports and focused pull requests are welcome. For a bug, include the app version, Windows build, relevant hardware, reproduction steps and the observed result. Remove personal details from logs first.
+
+Add new options through a bilingual definition in `Data/catalog.json` and the relevant typed handler. Preserve applicability checks, backup-before-write and result verification. Keep the implementation simple. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT. See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+Tweakly's source code is licensed under **MIT**. See [LICENSE](LICENSE) and [third-party notices](THIRD-PARTY-NOTICES.md).
 
-Font assets retain their separate licenses. The supplied Peyda files are included with the project owner's confirmed redistribution permission; the MIT license applies to Tweakly code, not to Peyda. UI behavior and visual checks are described in [UI notes](docs/UI.md).
+Fonts and bundled runtime components retain their own licenses. Peyda is included with the project owner's confirmed redistribution permission; Tweakly's MIT license does not relicense the font.
 
 ---
 
 ## فارسی
 
-**Tweakly ابزار پرتابل و متن‌باز تنظیم ویندوز است؛ گزینه‌ها دانه‌دانه اجرا می‌شوند.**
+<div dir="rtl">
 
-یک فایل EXE را باز کن، دستهٔ موردنظر را انتخاب کن و فقط گزینهٔ دلخواهت را اجرا کن. بازشدن اپ تنظیمات ویندوز را تغییر نمی‌دهد. رابط فارسی و انگلیسی، ثبت وضعیت قبلی، بررسی نتیجه و بازگردانی تنظیمات پشتیبانی‌شده فراهم شده‌اند.
+**Tweakly یک ابزار پرتابل و متن‌باز برای تنظیم ویندوز است؛ هر گزینه با انتخاب خودت اجرا می‌شود.**
 
-رابط از فونت داخلی Peyda برای فارسی و IBM Plex Sans برای انگلیسی استفاده می‌کند؛ نصب فونت لازم نیست. چیدمان راست‌به‌چپ، کارت‌های خوانا، وضعیت انتخاب‌شده و انیمیشن‌های کوتاه دکمه‌ها و صفحه‌ها فراهم‌اند. تنظیم کاهش حرکت ویندوز رعایت می‌شود. مجوز فونت‌ها جدا از مجوز MIT سورس است.
+فقط فایل `Tweakly.exe` را از بخش Assets آخرین Release دانلود و باز کن. نصب برنامه، نصب جداگانهٔ .NET یا نصب فونت لازم نیست. بازشدن برنامه هیچ تنظیمی را تغییر نمی‌دهد؛ «یک کلیک» به اجرای برنامه اشاره دارد، نه بهینه‌سازی دسته‌جمعی.
 
-برای ساخت، SDK نسخهٔ ۱۰ از .NET را نصب و دستورهای بالا را در ویندوز اجرا کن. امکانات اصلی آفلاین هستند؛ تست‌های اینترنت، نصب مجدد برنامه و بعضی ابزارهای ویندوز نیازمندی‌های خودشان را دارند.
+رابط فارسی و انگلیسی، چیدمان RTL و LTR، فونت‌های داخلی Peyda و IBM Plex Sans، تم تیره و ۹۰ گزینهٔ مستقل برای بخش‌های مختلف ویندوز در دسترس‌اند. اثر هر گزینه را بخوان، ورودی لازم را مشخص کن و همان گزینه را اجرا کن. وضعیت قبلی تنظیمات پشتیبانی‌شده ثبت می‌شود و در صورت امکان، بازگردانی دارد.
 
-این نسخهٔ اولیه باید پیش از انتشار عمومی روی سیستم‌های آزمایشی بررسی شود. تنظیمات حساس امنیت، بوت و درایور افزایش کارایی تضمین‌شده ندارند. محدودیت‌ها و پوشش امکانات در پوشهٔ `docs` مستند شده‌اند.
+**برنامه هنوز در مرحلهٔ اولیه است و زیاد روی سیستم‌های واقعی تست نشده است.** موفقیت ۱۹ تست خودکار به معنای تست کامل همهٔ تنظیمات روی همهٔ سخت‌افزارها نیست. برای تغییرات پیشرفته از سیستم آزمایشی استفاده کن و از فایل‌های مهم بکاپ مستقل داشته باش. حذف برنامه یا دستگاه و بعضی عملیات تعمیر، بازگردانی دقیق عمومی ندارند؛ نقطهٔ بازیابی هم جای بکاپ فایل‌های شخصی را نمی‌گیرد.
+
+هدف سازگاری، ویندوز ۱۰ نسخهٔ 22H2 و ویندوز ۱۱ با معماری x64 است. امکانات اصلی آفلاین‌اند و نیاز به اینترنت یا دسترسی Administrator برای هر عملیات مشخص می‌شود. امکانات Guardian و محاسبه‌گرهای جدید برای مرحلهٔ بعد برنامه‌ریزی شده‌اند و هنوز در این نسخه وجود ندارند.
+
+برای ساخت سورس، .NET 10 SDK را روی ویندوز نصب و دستورهای بخش Build را اجرا کن. مجوز سورس MIT است؛ فونت‌ها و Runtime مجوز مستقل دارند.
+
+</div>
